@@ -1,0 +1,28 @@
+$Subscriptions = Get-AzSubscription
+foreach ($sub in $Subscriptions) 
+{
+
+$dn=@();
+$sdn=@();
+
+  $disks=get-azdisk
+  foreach ($disk in $disks)
+  {  $dn+= $disk.name    }
+
+
+    $snapshot = Get-AzSnapshot
+    foreach ($snap in $snapshot)
+
+        {
+        $sourcedisk= Get-AzSnapshot -SnapshotName $snap.Name | Select-Object -ExpandProperty CreationData | Select-Object -ExpandProperty SourceResourceId
+        $sourcedisk= $sourcedisk.split('/')[8]
+        $sdn+=$sourcedisk                                
+        }
+
+        for($i=0;$i -lt $sdn.length;$i++)
+        {
+        $output=$dn.Contains($sdn[$i])
+        if ($output -eq 'True') 
+        { echo $sdn[$i]}
+        }
+}
