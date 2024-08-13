@@ -1,0 +1,27 @@
+Connect-AzAccount
+
+$storageAccountName = "storageacc2243"
+$storageAccountKey = ""
+$storageContext = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageAccountKey
+
+
+$vm= Get-AzVM
+
+$csvContent = $vm | ConvertTo-Csv -NoTypeInformation
+
+$containerName = "ps-csv"
+$blobName = "yourBlobName1.csv"
+
+$csvContentBytes = [System.Text.Encoding]::UTF8.GetBytes($csvContent)
+$memoryStream = New-Object System.IO.MemoryStream
+$memoryStream.Write($csvContentBytes, 0, $csvContentBytes.Length)
+$memoryStream.Seek(0, [System.IO.SeekOrigin]::Begin)
+
+$tempFilePath = [System.IO.Path]::GetTempFileName()
+[System.IO.File]::WriteAllBytes($tempFilePath, $csvContentBytes)
+#$memoryStream.Seek(0, [System.IO.SeekOrigin]::Begin)
+#$memoryStream | Set-Content -Path $tempFilePath -Encoding Byte
+
+Set-AzStorageBlobContent -File $tempFilePath -Container $containerName -Blob $blobName -Context $storageContext
+
+Remove-Item $tempFilePath
