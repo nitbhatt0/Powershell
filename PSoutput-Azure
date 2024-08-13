@@ -1,6 +1,6 @@
 Connect-AzAccount
 
-$storageAccountName = "storageacc2243"
+$storageAccountName = ""
 $storageAccountKey = ""
 $storageContext = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageAccountKey
 
